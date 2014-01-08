@@ -1,0 +1,43 @@
+﻿<Window x:Class="CheckAlphaGradation.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="600" Width="1600">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="80*"/>
+            <RowDefinition Height="520*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="520*"/>
+            <ColumnDefinition Width="520*"/>
+            <ColumnDefinition Width="520*"/>
+        </Grid.ColumnDefinitions>
+
+        <Slider Name="SliderInfluence" Grid.Row="0" Grid.Column="0"
+                Minimum="0" Maximum="100" Value="0"
+                ValueChanged="SliderInfluence_ValueChanged"/>
+        <Label Name="LabelInfluence" Grid.Row="0" Grid.Column="1" Width="50">0</Label>
+        <Label Name="LabelInfo" Grid.Row="0" Grid.Column="2"/>
+        
+        <ScrollViewer Name="ScrollViewerImage" 
+                      Grid.Row="1" Grid.Column="0"
+                      ScrollChanged="ScrollViewer_ScrollChanged"
+                      ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Visible">
+            <Image Name="Image" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" RenderTransformOrigin="0.5,0.5"/>
+        </ScrollViewer>
+
+        <ScrollViewer Name="ScrollViewerCurveRed" 
+                      Grid.Row="1" Grid.Column="1" 
+                      ScrollChanged="ScrollViewer_ScrollChanged"
+                      ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Visible">
+            <Image Name="ImageCurveRed" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" RenderTransformOrigin="0.5,0.5"/>
+        </ScrollViewer>
+
+        <ScrollViewer Name="ScrollViewerCurveGreen" 
+                      Grid.Row="1" Grid.Column="2" 
+                      ScrollChanged="ScrollViewer_ScrollChanged"
+                      ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Visible">
+            <Image Name="ImageCurveGreen" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" RenderTransformOrigin="0.5,0.5"/>
+        </ScrollViewer>
+    </Grid>
+</Window>
