@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Windows;
 
 namespace CheckAlphaGradation
 {
@@ -61,6 +62,27 @@ namespace CheckAlphaGradation
                 Convert.ToByte(b.Clamp0_255()));
         }
 
+        /// <summary>
+        /// returns (1-ratio)*color0 + (ratio)*color1
+        /// </summary>
+        /// <param name="color0"></param>
+        /// <param name="color1"></param>
+        /// <param name="ratio"></param>
+        /// <returns></returns>
+        static public Color Lerp(Color color0, Color color1, double ratio)
+        {
+            double a = (1 - ratio) * color0.A + (ratio) * color1.A;
+            double r = (1 - ratio) * color0.R + (ratio) * color1.R;
+            double g = (1 - ratio) * color0.G + (ratio) * color1.G;
+            double b = (1 - ratio) * color0.B + (ratio) * color1.B;
+
+            return Color.FromArgb(
+                Convert.ToByte(a.Clamp0_255()),
+                Convert.ToByte(r.Clamp0_255()),
+                Convert.ToByte(g.Clamp0_255()),
+                Convert.ToByte(b.Clamp0_255()));
+        }
+
         public static int Clamp0_255(this int value)
         {
             return value.Clamp(0, 255);
@@ -106,5 +128,16 @@ namespace CheckAlphaGradation
             double ratio = (x - xMin) / (xMax - xMin);
             return yMin + ratio * (yMax - yMin);
         }
+
+        public static void MyCatch(System.Exception ex)
+        {
+            var st = new StackTrace(ex, true);      // stack trace for the exception with source file information
+            var frame = st.GetFrame(0);             // top stack frame
+            String sourceMsg = String.Format("{0}({1})", frame.GetFileName(), frame.GetFileLineNumber());
+            Console.WriteLine(sourceMsg);
+            MessageBox.Show(ex.Message + Environment.NewLine + sourceMsg);
+            Debugger.Break();
+        }
+
     }
 }
