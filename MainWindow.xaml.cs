@@ -2,6 +2,7 @@
 //using System.Windows.Media;
 //using System.Drawing;
 using System.Diagnostics;
+using System.Resources;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -17,27 +18,21 @@ namespace CheckAlphaGradation
     {
         DataLine blackBkgImages = new DataLine();
         DataLine whiteBkgImages = new DataLine();
-        //DataLine rebuiltImages = new DataLine();
-        DataLine rebuiltImages;
+        DataLine rebuiltImages = new DataLine();
 
-
-        int colorInfluence = 0;
+        int colorInfluenceIndex = 0;
 
         public MainWindow()
         {
             InitializeComponent();
-
-            whiteBkgImages.LoadFromFolder(
-                "F:\\myFolder1\\");
-
-            blackBkgImages.LoadFromFolder(
-                "F:\\myFolder2\\");
-
+            whiteBkgImages.LoadFromFolder(CheckAlphaGradation.Properties.Resources.folderPath1);
+            blackBkgImages.LoadFromFolder(CheckAlphaGradation.Properties.Resources.folderPath2);
+            
             if(rebuiltImages!=null)
                 rebuiltImages.BuildFromFormula();
 
             SliderInfluence.Value = 100;
-            Zoom(0.65);
+            Zoom(0.5);
         }
 
 
@@ -65,18 +60,20 @@ namespace CheckAlphaGradation
 
         private void SliderInfluence_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            int newColorInfluence = Convert.ToInt32(Math.Round(SliderInfluence.Value));
+            LabelInfluence.Content = SliderInfluence.Value;
 
-            if (newColorInfluence == colorInfluence)
+            int newColorInfluenceIndex = DataLine.GetSampleIndex(SliderInfluence.Value);
+            if (newColorInfluenceIndex == colorInfluenceIndex)
                 return;
 
-            colorInfluence = newColorInfluence;
-            LabelInfluence.Content = newColorInfluence;
+            colorInfluenceIndex = newColorInfluenceIndex;
+            LabelClosestSampleIndex.Content = newColorInfluenceIndex;
+            
 
-            blackBkgImages.SetImages(new Image[] { ImageBlack, ImageBlackCurveRed, ImageBlackCurveGreen }, newColorInfluence);
-            whiteBkgImages.SetImages(new Image[] { ImageWhite, ImageWhiteCurveRed, ImageWhiteCurveGreen }, newColorInfluence);
+            blackBkgImages.SetImages(new Image[] { ImageBlack, ImageBlackCurveRed, ImageBlackCurveGreen }, newColorInfluenceIndex);
+            whiteBkgImages.SetImages(new Image[] { ImageWhite, ImageWhiteCurveRed, ImageWhiteCurveGreen }, newColorInfluenceIndex);
             if (rebuiltImages != null)
-                rebuiltImages.SetImages(new Image[] { ImageRebuilt, ImageRebuiltCurveRed, ImageRebuiltCurveGreen }, newColorInfluence);
+                rebuiltImages.SetImages(new Image[] { ImageRebuilt, ImageRebuiltCurveRed, ImageRebuiltCurveGreen }, newColorInfluenceIndex);
         }
 
 
@@ -101,7 +98,7 @@ namespace CheckAlphaGradation
         {
             int x = (int)(e.GetPosition(image).X);
             int y = (int)(e.GetPosition(image).Y);
-            var color = imageBitmapInfos[colorInfluence].GetPixelColor(x, y);
+            var color = imageBitmapInfos[colorInfluenceIndex].GetPixelColor(x, y);
             LabelInfo.Content = String.Format("X={0:D4}, Y={1:D4}, A={2:D3}, R={3:D3}, G={4:D3}, B={5:D3}",
                 x, y, color.A, color.R, color.G, color.B);
         }
