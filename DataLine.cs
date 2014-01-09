@@ -221,7 +221,8 @@ namespace CheckAlphaGradation
         {
             for (int i = 0; i < samplesCount; ++i)
             {
-                imageBitmapInfos[i] = GetRebuiltImageBlack(/*imageBitmapInfos[0],*/ (double)i / 100);
+                //imageBitmapInfos[i] = GetRebuiltImageBlack((double)i / 100);
+                imageBitmapInfos[i] = GetRebuiltImageFinal_2_2((double)i / 100, Color.Black);
             }
             ConvertImageBitmapInfos();
             ComputeRgbCurves();
@@ -233,7 +234,8 @@ namespace CheckAlphaGradation
         {
             for (int i = 0; i < samplesCount; ++i)
             {
-                imageBitmapInfos[i] = GetRebuiltImageWhite(/*imageBitmapInfos[0],*/ (double)i / 100);
+                //imageBitmapInfos[i] = GetRebuiltImageWhite((double)i / 100);
+                imageBitmapInfos[i] = GetRebuiltImageFinal_2_2((double)i / 100, Color.White);
             }
             ConvertImageBitmapInfos();
             ComputeRgbCurves();
@@ -242,7 +244,7 @@ namespace CheckAlphaGradation
 
 
 
-        private BitmapInfo GetRebuiltImageBlack(/*BitmapInfo source,*/ double colorInfluence)
+        private BitmapInfo GetRebuiltImageBlack(double colorInfluence)
         {
             BitmapInfo dest = new BitmapInfo(512, 512, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
@@ -273,7 +275,7 @@ namespace CheckAlphaGradation
             return dest;
         }
 
-        private BitmapInfo GetRebuiltImageWhite(/*BitmapInfo source,*/ double colorInfluence)
+        private BitmapInfo GetRebuiltImageWhite(double colorInfluence)
         {
             BitmapInfo dest = new BitmapInfo(512, 512, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
@@ -306,66 +308,65 @@ namespace CheckAlphaGradation
         }
 
 
-        private BitmapInfo GetRebuiltImageFinal(/*BitmapInfo source,*/ double colorInfluence)
+        private BitmapInfo GetRebuiltImageFinal(double colorInfluence, Color bkgColor)
         {
             BitmapInfo dest = new BitmapInfo(512, 512, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
-            var backgroundColorWhite = System.Drawing.Color.FromArgb(255, 255, 255, 255);
-            var backgroundColorBlack = System.Drawing.Color.FromArgb(255, 0, 0, 0);
 
             var shadowColor = System.Drawing.Color.FromArgb(255, 255, 0, 0);
             var layerColor = System.Drawing.Color.FromArgb(255, 0, 255, 0);
 
 
+            // CASE-3: FORMULA COMPLYING WITH BOTH
+            for (int x = 0; x < dest.Width; x++)
+            {
+                double layerAlpha = Helpers.Lerp(x, 0, 511, 0, 1);   // hard coded value for alpha
+                double mysticRatio = Math.Pow(layerAlpha, 1 + 16 * colorInfluence);
 
-            //// CASE-1: BLACK BACKGROUND
-            //for (int x = 0; x < dest.Width; x++)
-            //{
-            //    double layerAlpha = Helpers.Lerp(x, 0, 511, 0, 1);   // hard coded value for alpha
+                double r =              bkgColor.RNormalized() * (1 - layerAlpha) + mysticRatio;
+                double g = layerAlpha + bkgColor.GNormalized() * (1 - layerAlpha) - mysticRatio;
+                double b =              bkgColor.BNormalized() * (1 - layerAlpha);
 
-            //    double solidColorRatio = Math.Pow(layerAlpha, 1 + 16 * colorInfluence);
-            //    double glassEdgeRatio = layerAlpha - solidColorRatio;
+                //rgb = layerAlpha * layerColor + (1 - layerAlpha) * bkgColor + ...
 
-            //    Color finalShadowColor = Helpers.Weight(solidColorRatio, shadowColor, glassEdgeRatio, layerColor);
+                Color finalColor = Color.FromArgb(255, r.ScaleToByte(), g.ScaleToByte(), b.ScaleToByte());
 
-            //    // TODO later: blend with bkg
-            //    Color finalColor = Helpers.Lerp(backgroundColorBlack, finalShadowColor, layerAlpha);
+                for (int y = 0; y < dest.Height; ++y)
+                {
+                    dest.SetPixelColor(x, y, finalColor);
+                }
+            }
 
-            //    for (int y = 0; y < dest.Height; ++y)
-            //    {
-            //        dest.SetPixelColor(x, y, finalColor);
-            //    }
-            //}
+            return dest;
+        }
 
 
+        private BitmapInfo GetRebuiltImageFinal_2(double colorInfluence, Color bkgColor)
+        {
+            BitmapInfo dest = new BitmapInfo(512, 512, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
-            // CASE-2: WHITE BACKGROUND
+            var shadowColor = System.Drawing.Color.FromArgb(255, 255, 0, 0);
+            var layerColor = System.Drawing.Color.FromArgb(255, 0, 255, 0);
 
 
             // CASE-3: FORMULA COMPLYING WITH BOTH
+            for (int x = 0; x < dest.Width; x++)
+            {
+                double layerAlpha = Helpers.Lerp(x, 0, 511, 0, 1);   // hard coded value for alpha
+                double mysticRatio_2 = Math.Pow(layerAlpha, 16 * colorInfluence);
 
-            // TODO !!!
+                double r =              bkgColor.RNormalized() * (1 - layerAlpha) + layerAlpha * mysticRatio_2;
+                double g = layerAlpha + bkgColor.GNormalized() * (1 - layerAlpha) - layerAlpha * mysticRatio_2;
+                double b =              bkgColor.BNormalized() * (1 - layerAlpha);
 
-            //for (int x = 0; x < dest.Width; x++)
-            //{
-            //    double layerAlpha = Helpers.Lerp(x, 0, 511, 0, 1);   // hard coded value for alpha
+                //rgb = layerAlpha * layerColor + (1 - layerAlpha) * bkgColor + ...
 
-            //    double glassEdgeRatio = layerAlpha - Math.Pow(layerAlpha, 1 + 16 * colorInfluence);
+                Color finalColor = Color.FromArgb(255, r.ScaleToByte(), g.ScaleToByte(), b.ScaleToByte());
 
-            //    var finalShadowColor = Helpers.Lerp(shadowColor, layerColor, glassEdgeRatio);
-            //    finalShadowColor = System.Drawing.Color.FromArgb(
-            //        Convert.ToByte((255 * layerAlpha).Clamp0_255()), finalShadowColor.R, finalShadowColor.G, finalShadowColor.B);
-
-            //    var finalColor = Helpers.Lerp(backgroundColor, finalShadowColor, layerAlpha);
-
-
-            //    // TODO blend with bkg
-
-            //    for (int y = 0; y < dest.Height; ++y)
-            //    {
-            //        dest.SetPixelColor(x, y, finalColor);
-            //    }
-            //}
+                for (int y = 0; y < dest.Height; ++y)
+                {
+                    dest.SetPixelColor(x, y, finalColor);
+                }
+            }
 
             return dest;
         }
@@ -373,6 +374,36 @@ namespace CheckAlphaGradation
 
 
 
+        private BitmapInfo GetRebuiltImageFinal_2_2(double colorInfluence, Color bkgColor)
+        {
+            BitmapInfo dest = new BitmapInfo(512, 512, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            var shadowColor = System.Drawing.Color.FromArgb(255, 255, 0, 0);
+            var layerColor = System.Drawing.Color.FromArgb(255, 0, 255, 0);
+
+
+            // CASE-3: FORMULA COMPLYING WITH BOTH
+            for (int x = 0; x < dest.Width; x++)
+            {
+                double layerAlpha = Helpers.Lerp(x, 0, 511, 0, 1);   // hard coded value for alpha
+                double mysticRatio_2 = Math.Pow(layerAlpha, 16 * colorInfluence);
+
+                double r = (1 - layerAlpha) * bkgColor.RNormalized() + layerAlpha * (mysticRatio_2 * shadowColor.RNormalized() + (1 - mysticRatio_2) * layerColor.RNormalized());
+                double g = (1 - layerAlpha) * bkgColor.GNormalized() + layerAlpha * (mysticRatio_2 * shadowColor.GNormalized() + (1 - mysticRatio_2) * layerColor.GNormalized());
+                double b = (1 - layerAlpha) * bkgColor.BNormalized() + layerAlpha * (mysticRatio_2 * shadowColor.BNormalized() + (1 - mysticRatio_2) * layerColor.BNormalized());
+
+                //rgb = layerAlpha * layerColor + (1 - layerAlpha) * bkgColor + ...
+
+                Color finalColor = Color.FromArgb(255, r.ScaleToByte(), g.ScaleToByte(), b.ScaleToByte());
+
+                for (int y = 0; y < dest.Height; ++y)
+                {
+                    dest.SetPixelColor(x, y, finalColor);
+                }
+            }
+
+            return dest;
+        }
 
 
 
