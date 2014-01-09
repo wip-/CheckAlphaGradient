@@ -158,5 +158,15 @@ namespace CheckAlphaGradation
             Debugger.Break();
         }
 
+
+        internal static double Min(double p1, double p2, double p3)
+        {
+            return Math.Min(Math.Min(p1, p2), p3);
+        }
+
+        internal static double Max(double p1, double p2, double p3)
+        {
+            return Math.Max(Math.Max(p1, p2), p3);
+        }
     }
 }

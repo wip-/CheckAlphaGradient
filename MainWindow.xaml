@@ -14,6 +14,7 @@
             <ColumnDefinition Width="200*"/>
             <ColumnDefinition Width="200*"/>
             <ColumnDefinition Width="200*"/>
+            <ColumnDefinition Width="200*"/>
         </Grid.ColumnDefinitions>
 
         <StackPanel Grid.Row="0" Grid.Column="0">
@@ -32,14 +33,14 @@
 
         <StackPanel Grid.Row="0" Grid.Column="1">
             <Slider Name="SliderZoomOut" 
-                Minimum="0.01" Maximum="1" Value="0.5"
+                Minimum="0.01" Maximum="1" Value="0.35"
                 ValueChanged="SliderZoomOut_ValueChanged"/>
             <Slider Name="SliderZoomIn" 
                 Minimum="1" Maximum="100" Value="1"
                 ValueChanged="SliderZoomIn_ValueChanged"/>
             <StackPanel Orientation="Horizontal">
                 <Button Name="ButtonResetZoom" Click="ButtonResetZoom_Click">Reset zoom</Button>
-                <Label Name="LabelZoom" Width="50">0.5</Label>
+                <Label Name="LabelZoom" Width="50">0.35</Label>
             </StackPanel>
         </StackPanel>
         
@@ -64,7 +65,14 @@
                       ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Visible">
             <Image Name="ImageBlackCurveGreen" Stretch="None" RenderTransformOrigin="0.5,0.5"/>
         </ScrollViewer>
-
+        <ScrollViewer Name="ScrollViewerImageBlackCurveBlue" 
+                      Grid.Row="1" Grid.Column="3" 
+                      ScrollChanged="ScrollViewer_ScrollChanged"
+                      ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Visible">
+            <Image Name="ImageBlackCurveBlue" Stretch="None" RenderTransformOrigin="0.5,0.5"/>
+        </ScrollViewer>
+        
+        
         <ScrollViewer Name="ScrollViewerImageWhite" 
                       Grid.Row="2" Grid.Column="0"
                       ScrollChanged="ScrollViewer_ScrollChanged"
@@ -84,7 +92,14 @@
                       ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Visible">
             <Image Name="ImageWhiteCurveGreen" Stretch="None" RenderTransformOrigin="0.5,0.5"/>
         </ScrollViewer>
-
+        <ScrollViewer Name="ScrollViewerImageWhiteCurveBlue" 
+                      Grid.Row="2" Grid.Column="3" 
+                      ScrollChanged="ScrollViewer_ScrollChanged"
+                      ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Visible">
+            <Image Name="ImageWhiteCurveBlue" Stretch="None" RenderTransformOrigin="0.5,0.5"/>
+        </ScrollViewer>
+        
+        
         <ScrollViewer Name="ScrollViewerImageBlackRebuilt" 
                       Grid.Row="3" Grid.Column="0"
                       ScrollChanged="ScrollViewer_ScrollChanged"
@@ -104,7 +119,14 @@
                       ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Visible">
             <Image Name="ImageBlackRebuiltCurveGreen" Stretch="None" RenderTransformOrigin="0.5,0.5"/>
         </ScrollViewer>
-
+        <ScrollViewer Name="ScrollViewerImageBlackRebuiltCurveBlue" 
+                      Grid.Row="3" Grid.Column="3" 
+                      ScrollChanged="ScrollViewer_ScrollChanged"
+                      ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Visible">
+            <Image Name="ImageBlackRebuiltCurveBlue" Stretch="None" RenderTransformOrigin="0.5,0.5"/>
+        </ScrollViewer>
+        
+        
         <ScrollViewer Name="ScrollViewerImageWhiteRebuilt" 
                       Grid.Row="4" Grid.Column="0"
                       ScrollChanged="ScrollViewer_ScrollChanged"
@@ -123,6 +145,12 @@
                       ScrollChanged="ScrollViewer_ScrollChanged"
                       ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Visible">
             <Image Name="ImageWhiteRebuiltCurveGreen" Stretch="None" RenderTransformOrigin="0.5,0.5"/>
+        </ScrollViewer>
+        <ScrollViewer Name="ScrollViewerImageWhiteRebuiltCurveBlue" 
+                      Grid.Row="4" Grid.Column="3" 
+                      ScrollChanged="ScrollViewer_ScrollChanged"
+                      ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Visible">
+            <Image Name="ImageWhiteRebuiltCurveBlue" Stretch="None" RenderTransformOrigin="0.5,0.5"/>
         </ScrollViewer>
     </Grid>
 </Window>

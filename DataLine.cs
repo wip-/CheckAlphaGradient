@@ -18,6 +18,7 @@ namespace CheckAlphaGradation
         public IntPtr[] imageBitmaps;
         public IntPtr[] redCurveBitmaps;
         public IntPtr[] greenCurveBitmaps;
+        public IntPtr[] blueCurveBitmaps;
 
         static int samplesCount = 26; // MAX = 101 (all samples)
         static List<int> sampleIds; // these IDs match with the value of influence in the underlying exported file
@@ -69,83 +70,116 @@ namespace CheckAlphaGradation
                 Imaging.CreateBitmapSourceFromHBitmap(
                     greenCurveBitmaps[colorInfluenceIndex], IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
 
+            images[3].Source =
+                Imaging.CreateBitmapSourceFromHBitmap(
+                    blueCurveBitmaps[colorInfluenceIndex], IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+
         }
 
 
 
-        void ComputeRedGreenCurves()
+
+        class CurvesInfo
         {
-            List<double[]> redCurves = new List<double[]>();
-            List<double[]> greenCurves = new List<double[]>();  
-            List<double> redCurvesMins = new List<double>();
-            List<double> greenCurvesMins = new List<double>();
-            List<double> redCurvesMaxs = new List<double>();
-            List<double> greenCurvesMaxs = new List<double>();
+            public CurvesInfo(List<double[]> curves, double min, double max)
+            {
+                this.curves = curves;
+                this.min = min;
+                this.max = max;
+            }
+
+            public List<double[]> curves;
+            public double min;
+            public double max;
+        }
+
+        CurvesInfo ComputeColorCurves(ColorComponentExtractor extractor)
+        {
+            List<double[]> curves = new List<double[]>();
+            List<double> curvesMins = new List<double>();
+            List<double> curvesMaxs = new List<double>();
 
             for (int i = 0; i < samplesCount; ++i)
             {
-                double influence_d = Helpers.Lerp(
-                    i, 0, samplesCount - 1,
-                    0, 1);
-
-                double[] redCurve = GetColorLevelCurve(imageBitmapInfos[i], influence_d,
-                    (color, a, c) =>
-                    {
-                        //return a - Math.Pow(a, 1 + 16 * c); // <- GNormalized() equals this (BLACK)
-                        //return 1 - Math.Pow(a, 1 + 16 * c); // <- GNormalized() looks like this (WHITE)
-
-                        double r = color.RNormalized();
-                        return r;
-                    }
-                    );
-                double[] greenCurve = GetColorLevelCurve(imageBitmapInfos[i], influence_d,
-                    (color, a, c) =>
-                    {
-                        //return Math.Pow(a, 1 + 16*c);   // <- RNormalized() equals this (BLACK)
-                        // ?????      <- RNormalized() equals this (WHITE)
-
-                        double g = color.GNormalized();
-                        return g;
-
-                        double r = color.RNormalized();
-                        double g2 = 2 - r - a;  // this proves that g channel is equal to (2-r-a) ON WHITE BACKGROUND (r(0) = 1)
-                        double g3 = 0 - r + a;  // TODO CHECK IF THIS ALSO WORKS ON WHITE BACKGROUND                  (r(0) = 0)
-                    }
-                    );
-                redCurves.Add(redCurve);
-                greenCurves.Add(greenCurve);
-                redCurvesMins.Add(redCurve.Min());
-                redCurvesMaxs.Add(redCurve.Max());
-                greenCurvesMins.Add(greenCurve.Min());
-                greenCurvesMaxs.Add(greenCurve.Max());
+                double influence_d = Helpers.Lerp(i, 0, samplesCount - 1,0, 1);
+                double[] redCurve = GetColorLevelCurve(imageBitmapInfos[i], influence_d, extractor);
+                curves.Add(redCurve);
+                curvesMins.Add(redCurve.Min());
+                curvesMaxs.Add(redCurve.Max());
             }
 
-            double redCurvesMin = redCurvesMins.Min();
-            double redCurvesMax = redCurvesMaxs.Max();
-            double greenCurvesMin = greenCurvesMins.Min();
-            double greenCurvesMax = greenCurvesMaxs.Max();
+            return new CurvesInfo(curves, curvesMins.Min(), curvesMaxs.Max());
+        }
 
-            // red and green use same scale
+
+        void ComputeRgbCurves()
+        {
+            CurvesInfo redCurvesInfo = ComputeColorCurves(
+                (color, a, c) =>
+                {
+                    //return a - Math.Pow(a, 1 + 16 * c); // <- GNormalized() equals this (BLACK)
+                    //return 1 - Math.Pow(a, 1 + 16 * c); // <- GNormalized() looks like this (WHITE)
+
+                    double r = color.RNormalized();
+                    return r;
+                });
+
+            CurvesInfo greenCurvesInfo = ComputeColorCurves(
+                (color, a, c) =>
+                {
+                    //return Math.Pow(a, 1 + 16*c);   // <- RNormalized() equals this (BLACK)
+                    // ?????      <- RNormalized() equals this (WHITE)
+
+                    double g = color.GNormalized();
+                    return g;
+
+                    //double r = color.RNormalized();
+                    //double g2 = 2 - r - a;  // this proves that g channel is equal to (2-r-a) ON WHITE BACKGROUND (r(0) = 1)
+                    //double g3 = 0 - r + a;  // TODO CHECK IF THIS ALSO WORKS ON WHITE BACKGROUND                  (r(0) = 0)
+                });
+
+            CurvesInfo blueCurvesInfo = ComputeColorCurves(
+                (color, a, c) =>
+                {
+                    double b = color.BNormalized();
+                    return b;
+                });
+
+            double redCurvesMin = redCurvesInfo.min;
+            double redCurvesMax = redCurvesInfo.max;
+            double greenCurvesMin = greenCurvesInfo.min;
+            double greenCurvesMax = greenCurvesInfo.max;
+            double blueCurvesMin = blueCurvesInfo.min;
+            double blueCurvesMax = blueCurvesInfo.max;
+
+            // red and green etc use same scale
             if (true)
             {
-                double rgMin = Math.Min(redCurvesMin, greenCurvesMin);
-                double rgMax = Math.Max(redCurvesMax, greenCurvesMax);
-                redCurvesMin = rgMin;
-                redCurvesMax = rgMax;
-                greenCurvesMin = rgMin;
-                greenCurvesMax = rgMax;
+                double rgbMin = Helpers.Min(redCurvesInfo.min, greenCurvesInfo.min, blueCurvesInfo.min);
+                double rgbMax = Helpers.Max(redCurvesInfo.max, greenCurvesInfo.max, blueCurvesInfo.max);
+                redCurvesMin = rgbMin;
+                redCurvesMax = rgbMax;
+                greenCurvesMin = rgbMin;
+                greenCurvesMax = rgbMax;
+                blueCurvesMin = rgbMin;
+                blueCurvesMax = rgbMax;
             }
 
             redCurveBitmaps = new IntPtr[samplesCount];
             greenCurveBitmaps = new IntPtr[samplesCount];
+            blueCurveBitmaps = new IntPtr[samplesCount];
             try
             {
                 for (int i = 0; i < samplesCount; ++i)
                 {
-                    BitmapInfo redCurveBitmapInfo = GetColorLevelCurveImage(redCurves[i], redCurvesMin, redCurvesMax);
+                    BitmapInfo redCurveBitmapInfo = GetColorLevelCurveImage(redCurvesInfo.curves[i], redCurvesMin, redCurvesMax);
                     redCurveBitmaps[i] = ConvertBitmapInfo(redCurveBitmapInfo);
-                    BitmapInfo greenCurveBitmapInfo = GetColorLevelCurveImage(greenCurves[i], greenCurvesMin, greenCurvesMax);
+
+                    BitmapInfo greenCurveBitmapInfo = GetColorLevelCurveImage(greenCurvesInfo.curves[i], greenCurvesMin, greenCurvesMax);
                     greenCurveBitmaps[i] = ConvertBitmapInfo(greenCurveBitmapInfo);
+
+                    BitmapInfo blueCurveBitmapInfo = GetColorLevelCurveImage(blueCurvesInfo.curves[i], blueCurvesMin, blueCurvesMax);
+                    blueCurveBitmaps[i] = ConvertBitmapInfo(blueCurveBitmapInfo);
                 }
             }
             catch (System.Exception ex)
@@ -177,7 +211,7 @@ namespace CheckAlphaGradation
                 imageBitmapInfos[i] = new BitmapInfo(bitmap);
             }
             ConvertImageBitmapInfos();
-            ComputeRedGreenCurves();
+            ComputeRgbCurves();
         }
 
 
@@ -190,7 +224,7 @@ namespace CheckAlphaGradation
                 imageBitmapInfos[i] = GetRebuiltImageBlack(/*imageBitmapInfos[0],*/ (double)i / 100);
             }
             ConvertImageBitmapInfos();
-            ComputeRedGreenCurves();
+            ComputeRgbCurves();
         }
 
 
@@ -202,7 +236,7 @@ namespace CheckAlphaGradation
                 imageBitmapInfos[i] = GetRebuiltImageWhite(/*imageBitmapInfos[0],*/ (double)i / 100);
             }
             ConvertImageBitmapInfos();
-            ComputeRedGreenCurves();
+            ComputeRgbCurves();
         }
 
 
@@ -256,9 +290,9 @@ namespace CheckAlphaGradation
                 double mysticRatio = Math.Pow(layerAlpha, 1 + 16 * colorInfluence);
 
                 //double r = layerColorRatio;
-                double r = 1 - (layerAlpha - mysticRatio);
+                double r = 1 - layerAlpha + mysticRatio;
                 double g = 1 - mysticRatio;
-                double b = 1;
+                double b = 1 - layerAlpha;
 
                 Color finalColor = Color.FromArgb(255, r.ScaleToByte(), g.ScaleToByte(), b.ScaleToByte());
 
