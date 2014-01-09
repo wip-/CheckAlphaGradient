@@ -18,7 +18,8 @@ namespace CheckAlphaGradation
     {
         DataLine blackBkgImages = new DataLine();
         DataLine whiteBkgImages = new DataLine();
-        DataLine rebuiltImages = new DataLine();
+        DataLine rebuiltBlackImages = new DataLine();
+        DataLine rebuiltWhiteImages = new DataLine();
 
         int colorInfluenceIndex = 0;
 
@@ -27,12 +28,11 @@ namespace CheckAlphaGradation
             InitializeComponent();
             whiteBkgImages.LoadFromFolder(CheckAlphaGradation.Properties.Resources.folderPath1);
             blackBkgImages.LoadFromFolder(CheckAlphaGradation.Properties.Resources.folderPath2);
-            
-            if(rebuiltImages!=null)
-                rebuiltImages.BuildFromFormula();
+            rebuiltBlackImages.BuildFromFormulaBlack();
+            rebuiltWhiteImages.BuildFromFormulaWhite();
 
             SliderInfluence.Value = 100;
-            Zoom(0.65);
+            Zoom(0.5);
         }
 
 
@@ -45,7 +45,8 @@ namespace CheckAlphaGradation
             {
                 ScrollViewerImageBlack, ScrollViewerImageBlackCurveRed, ScrollViewerImageBlackCurveGreen,
                 ScrollViewerImageWhite, ScrollViewerImageWhiteCurveRed, ScrollViewerImageWhiteCurveGreen,
-                ScrollViewerImageRebuilt, ScrollViewerImageRebuiltCurveRed, ScrollViewerImageRebuiltCurveGreen
+                ScrollViewerImageBlackRebuilt, ScrollViewerImageBlackRebuiltCurveRed, ScrollViewerImageBlackRebuiltCurveGreen,
+                ScrollViewerImageWhiteRebuilt, ScrollViewerImageWhiteRebuiltCurveRed, ScrollViewerImageWhiteRebuiltCurveGreen
             };
 
             foreach (ScrollViewer scrollViewer in scrollViewers)
@@ -72,8 +73,8 @@ namespace CheckAlphaGradation
 
             blackBkgImages.SetImages(new Image[] { ImageBlack, ImageBlackCurveRed, ImageBlackCurveGreen }, newColorInfluenceIndex);
             whiteBkgImages.SetImages(new Image[] { ImageWhite, ImageWhiteCurveRed, ImageWhiteCurveGreen }, newColorInfluenceIndex);
-            if (rebuiltImages != null)
-                rebuiltImages.SetImages(new Image[] { ImageRebuilt, ImageRebuiltCurveRed, ImageRebuiltCurveGreen }, newColorInfluenceIndex);
+            rebuiltBlackImages.SetImages(new Image[] { ImageBlackRebuilt, ImageBlackRebuiltCurveRed, ImageBlackRebuiltCurveGreen }, newColorInfluenceIndex);
+            rebuiltWhiteImages.SetImages(new Image[] { ImageWhiteRebuilt, ImageWhiteRebuiltCurveRed, ImageWhiteRebuiltCurveGreen }, newColorInfluenceIndex);
         }
 
 
@@ -88,10 +89,14 @@ namespace CheckAlphaGradation
             Image_MouseMove(ImageWhite, whiteBkgImages.imageBitmapInfos, sender, e);
         }
 
-        private void ImageRebuilt_MouseMove(object sender, MouseEventArgs e)
+        private void ImageBlackRebuilt_MouseMove(object sender, MouseEventArgs e)
         {
-            if (rebuiltImages != null)
-                Image_MouseMove(ImageRebuilt, rebuiltImages.imageBitmapInfos, sender, e);
+            Image_MouseMove(ImageBlackRebuilt, rebuiltBlackImages.imageBitmapInfos, sender, e);
+        }
+
+        private void ImageWhiteRebuilt_MouseMove(object sender, MouseEventArgs e)
+        {
+            Image_MouseMove(ImageWhiteRebuilt, rebuiltWhiteImages.imageBitmapInfos, sender, e);
         }
 
         private void Image_MouseMove(Image image, BitmapInfo[] imageBitmapInfos, object sender, MouseEventArgs e)
@@ -151,7 +156,8 @@ namespace CheckAlphaGradation
                 { 
                     ImageBlack, ImageBlackCurveRed, ImageBlackCurveGreen,
                     ImageWhite, ImageWhiteCurveRed, ImageWhiteCurveGreen,
-                    ImageRebuilt, ImageRebuiltCurveRed, ImageRebuiltCurveGreen,
+                    ImageBlackRebuilt, ImageBlackRebuiltCurveRed, ImageBlackRebuiltCurveGreen,
+                    ImageWhiteRebuilt, ImageWhiteRebuiltCurveRed, ImageWhiteRebuiltCurveGreen,
                     
                 };
 

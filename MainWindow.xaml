@@ -5,14 +5,15 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="80*"/>
-            <RowDefinition Height="300*"/>
-            <RowDefinition Height="300*"/>
-            <RowDefinition Height="300*"/>
+            <RowDefinition Height="200*"/>
+            <RowDefinition Height="200*"/>
+            <RowDefinition Height="200*"/>
+            <RowDefinition Height="200*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="300*"/>
-            <ColumnDefinition Width="300*"/>
-            <ColumnDefinition Width="300*"/>
+            <ColumnDefinition Width="200*"/>
+            <ColumnDefinition Width="200*"/>
+            <ColumnDefinition Width="200*"/>
         </Grid.ColumnDefinitions>
 
         <StackPanel Grid.Row="0" Grid.Column="0">
@@ -31,14 +32,14 @@
 
         <StackPanel Grid.Row="0" Grid.Column="1">
             <Slider Name="SliderZoomOut" 
-                Minimum="0.01" Maximum="1" Value="1"
+                Minimum="0.01" Maximum="1" Value="0.5"
                 ValueChanged="SliderZoomOut_ValueChanged"/>
             <Slider Name="SliderZoomIn" 
                 Minimum="1" Maximum="100" Value="1"
                 ValueChanged="SliderZoomIn_ValueChanged"/>
             <StackPanel Orientation="Horizontal">
                 <Button Name="ButtonResetZoom" Click="ButtonResetZoom_Click">Reset zoom</Button>
-                <Label Name="LabelZoom" Width="50">1</Label>
+                <Label Name="LabelZoom" Width="50">0.5</Label>
             </StackPanel>
         </StackPanel>
         
@@ -55,13 +56,13 @@
                       Grid.Row="1" Grid.Column="1" 
                       ScrollChanged="ScrollViewer_ScrollChanged"
                       ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Visible">
-            <Image Name="ImageBlackCurveRed" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" RenderTransformOrigin="0.5,0.5"/>
+            <Image Name="ImageBlackCurveRed" Stretch="None" RenderTransformOrigin="0.5,0.5"/>
         </ScrollViewer>
         <ScrollViewer Name="ScrollViewerImageBlackCurveGreen" 
                       Grid.Row="1" Grid.Column="2" 
                       ScrollChanged="ScrollViewer_ScrollChanged"
                       ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Visible">
-            <Image Name="ImageBlackCurveGreen" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" RenderTransformOrigin="0.5,0.5"/>
+            <Image Name="ImageBlackCurveGreen" Stretch="None" RenderTransformOrigin="0.5,0.5"/>
         </ScrollViewer>
 
         <ScrollViewer Name="ScrollViewerImageWhite" 
@@ -75,34 +76,53 @@
                       Grid.Row="2" Grid.Column="1" 
                       ScrollChanged="ScrollViewer_ScrollChanged"
                       ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Visible">
-            <Image Name="ImageWhiteCurveRed" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" RenderTransformOrigin="0.5,0.5"/>
+            <Image Name="ImageWhiteCurveRed" Stretch="None" RenderTransformOrigin="0.5,0.5"/>
         </ScrollViewer>
         <ScrollViewer Name="ScrollViewerImageWhiteCurveGreen" 
                       Grid.Row="2" Grid.Column="2" 
                       ScrollChanged="ScrollViewer_ScrollChanged"
                       ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Visible">
-            <Image Name="ImageWhiteCurveGreen" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" RenderTransformOrigin="0.5,0.5"/>
+            <Image Name="ImageWhiteCurveGreen" Stretch="None" RenderTransformOrigin="0.5,0.5"/>
         </ScrollViewer>
 
-        <ScrollViewer Name="ScrollViewerImageRebuilt" 
+        <ScrollViewer Name="ScrollViewerImageBlackRebuilt" 
                       Grid.Row="3" Grid.Column="0"
                       ScrollChanged="ScrollViewer_ScrollChanged"
                       ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Visible">
-            <Image Name="ImageRebuilt" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" RenderTransformOrigin="0.5,0.5"
-                   MouseMove="ImageRebuilt_MouseMove"/>
+            <Image Name="ImageBlackRebuilt" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" RenderTransformOrigin="0.5,0.5"
+                   MouseMove="ImageBlackRebuilt_MouseMove"/>
         </ScrollViewer>
-        <ScrollViewer Name="ScrollViewerImageRebuiltCurveRed" 
+        <ScrollViewer Name="ScrollViewerImageBlackRebuiltCurveRed" 
                       Grid.Row="3" Grid.Column="1" 
                       ScrollChanged="ScrollViewer_ScrollChanged"
                       ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Visible">
-            <Image Name="ImageRebuiltCurveRed" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" RenderTransformOrigin="0.5,0.5"/>
+            <Image Name="ImageBlackRebuiltCurveRed" Stretch="None" RenderTransformOrigin="0.5,0.5"/>
         </ScrollViewer>
-        <ScrollViewer Name="ScrollViewerImageRebuiltCurveGreen" 
+        <ScrollViewer Name="ScrollViewerImageBlackRebuiltCurveGreen" 
                       Grid.Row="3" Grid.Column="2" 
                       ScrollChanged="ScrollViewer_ScrollChanged"
                       ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Visible">
-            <Image Name="ImageRebuiltCurveGreen" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" RenderTransformOrigin="0.5,0.5"/>
+            <Image Name="ImageBlackRebuiltCurveGreen" Stretch="None" RenderTransformOrigin="0.5,0.5"/>
         </ScrollViewer>
 
+        <ScrollViewer Name="ScrollViewerImageWhiteRebuilt" 
+                      Grid.Row="4" Grid.Column="0"
+                      ScrollChanged="ScrollViewer_ScrollChanged"
+                      ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Visible">
+            <Image Name="ImageWhiteRebuilt" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" RenderTransformOrigin="0.5,0.5"
+                   MouseMove="ImageBlackRebuilt_MouseMove"/>
+        </ScrollViewer>
+        <ScrollViewer Name="ScrollViewerImageWhiteRebuiltCurveRed" 
+                      Grid.Row="4" Grid.Column="1" 
+                      ScrollChanged="ScrollViewer_ScrollChanged"
+                      ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Visible">
+            <Image Name="ImageWhiteRebuiltCurveRed" Stretch="None" RenderTransformOrigin="0.5,0.5"/>
+        </ScrollViewer>
+        <ScrollViewer Name="ScrollViewerImageWhiteRebuiltCurveGreen" 
+                      Grid.Row="4" Grid.Column="2" 
+                      ScrollChanged="ScrollViewer_ScrollChanged"
+                      ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Visible">
+            <Image Name="ImageWhiteRebuiltCurveGreen" Stretch="None" RenderTransformOrigin="0.5,0.5"/>
+        </ScrollViewer>
     </Grid>
 </Window>

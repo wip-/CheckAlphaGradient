@@ -183,11 +183,23 @@ namespace CheckAlphaGradation
 
 
 
-        public void BuildFromFormula()
+        public void BuildFromFormulaBlack()
         {
             for (int i = 0; i < samplesCount; ++i)
             {
-                imageBitmapInfos[i] = GetRebuiltImage(/*imageBitmapInfos[0],*/ (double)i / 100);
+                imageBitmapInfos[i] = GetRebuiltImageBlack(/*imageBitmapInfos[0],*/ (double)i / 100);
+            }
+            ConvertImageBitmapInfos();
+            ComputeRedGreenCurves();
+        }
+
+
+
+        public void BuildFromFormulaWhite()
+        {
+            for (int i = 0; i < samplesCount; ++i)
+            {
+                imageBitmapInfos[i] = GetRebuiltImageWhite(/*imageBitmapInfos[0],*/ (double)i / 100);
             }
             ConvertImageBitmapInfos();
             ComputeRedGreenCurves();
@@ -196,11 +208,7 @@ namespace CheckAlphaGradation
 
 
 
-
-
-
-
-        private BitmapInfo GetRebuiltImage(/*BitmapInfo source,*/ double colorInfluence)
+        private BitmapInfo GetRebuiltImageBlack(/*BitmapInfo source,*/ double colorInfluence)
         {
             BitmapInfo dest = new BitmapInfo(512, 512, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
@@ -210,9 +218,6 @@ namespace CheckAlphaGradation
             var shadowColor = System.Drawing.Color.FromArgb(255, 255, 0, 0);
             var layerColor = System.Drawing.Color.FromArgb(255, 0, 255, 0);
 
-
-
-#if false
             // CASE-1: BLACK BACKGROUND
             for (int x = 0; x < dest.Width; x++)
             {
@@ -230,8 +235,19 @@ namespace CheckAlphaGradation
                     dest.SetPixelColor(x, y, finalColor);
                 }
             }
-#endif
 
+            return dest;
+        }
+
+        private BitmapInfo GetRebuiltImageWhite(/*BitmapInfo source,*/ double colorInfluence)
+        {
+            BitmapInfo dest = new BitmapInfo(512, 512, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            var backgroundColorWhite = System.Drawing.Color.FromArgb(255, 255, 255, 255);
+            var backgroundColorBlack = System.Drawing.Color.FromArgb(255, 0, 0, 0);
+
+            var shadowColor = System.Drawing.Color.FromArgb(255, 255, 0, 0);
+            var layerColor = System.Drawing.Color.FromArgb(255, 0, 255, 0);
 
             // CASE-2: WHITE BACKGROUND
             for (int x = 0; x < dest.Width; x++)
@@ -251,6 +267,21 @@ namespace CheckAlphaGradation
                     dest.SetPixelColor(x, y, finalColor);
                 }
             }
+
+            return dest;
+        }
+
+
+        private BitmapInfo GetRebuiltImageFinal(/*BitmapInfo source,*/ double colorInfluence)
+        {
+            BitmapInfo dest = new BitmapInfo(512, 512, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            var backgroundColorWhite = System.Drawing.Color.FromArgb(255, 255, 255, 255);
+            var backgroundColorBlack = System.Drawing.Color.FromArgb(255, 0, 0, 0);
+
+            var shadowColor = System.Drawing.Color.FromArgb(255, 255, 0, 0);
+            var layerColor = System.Drawing.Color.FromArgb(255, 0, 255, 0);
+
 
 
             //// CASE-1: BLACK BACKGROUND
@@ -278,6 +309,9 @@ namespace CheckAlphaGradation
 
 
             // CASE-3: FORMULA COMPLYING WITH BOTH
+
+            // TODO !!!
+
             //for (int x = 0; x < dest.Width; x++)
             //{
             //    double layerAlpha = Helpers.Lerp(x, 0, 511, 0, 1);   // hard coded value for alpha
@@ -301,8 +335,6 @@ namespace CheckAlphaGradation
 
             return dest;
         }
-
-
 
 
 
