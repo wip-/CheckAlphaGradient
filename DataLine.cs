@@ -102,6 +102,7 @@ namespace CheckAlphaGradation
                     (color, a, c) =>
                     {
                         //return Math.Pow(a, 1 + 16*c);   // <- RNormalized() equals this (BLACK)
+                        // ?????      <- RNormalized() equals this (WHITE)
 
                         double g = color.GNormalized();
                         return g;
@@ -203,34 +204,100 @@ namespace CheckAlphaGradation
         {
             BitmapInfo dest = new BitmapInfo(512, 512, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
-            var backgroundColor = System.Drawing.Color.FromArgb(255, 255, 255, 255);
-            //var backgroundColor = System.Drawing.Color.FromArgb(255, 0, 0, 0);
+            var backgroundColorWhite = System.Drawing.Color.FromArgb(255, 255, 255, 255);
+            var backgroundColorBlack = System.Drawing.Color.FromArgb(255, 0, 0, 0);
 
             var shadowColor = System.Drawing.Color.FromArgb(255, 255, 0, 0);
             var layerColor = System.Drawing.Color.FromArgb(255, 0, 255, 0);
 
-            //if (colorInfluence == 1)
-            //    Debugger.Break();
 
+
+#if false
+            // CASE-1: BLACK BACKGROUND
             for (int x = 0; x < dest.Width; x++)
             {
                 double layerAlpha = Helpers.Lerp(x, 0, 511, 0, 1);   // hard coded value for alpha
+                double mysticRatio = Math.Pow(layerAlpha, 1 + 16 * colorInfluence);
 
-                double glassEdgeRatio = layerAlpha - Math.Pow(layerAlpha, 1 + 16 * colorInfluence);
-                var finalShadowColor = Helpers.Lerp(shadowColor, layerColor, glassEdgeRatio);
-                finalShadowColor = System.Drawing.Color.FromArgb(
-                    Convert.ToByte((255 * layerAlpha).Clamp0_255()), finalShadowColor.R, finalShadowColor.G, finalShadowColor.B);
+                double r = mysticRatio;
+                double g = layerAlpha - mysticRatio;
+                double b = 0;
 
-                var finalColor = Helpers.Lerp(backgroundColor, finalShadowColor, layerAlpha);
-
-
-                // TODO blend with bkg
+                Color finalColor = Color.FromArgb(255, r.ScaleToByte(), g.ScaleToByte(), b.ScaleToByte());
 
                 for (int y = 0; y < dest.Height; ++y)
                 {
                     dest.SetPixelColor(x, y, finalColor);
                 }
             }
+#endif
+
+
+            // CASE-2: WHITE BACKGROUND
+            for (int x = 0; x < dest.Width; x++)
+            {
+                double layerAlpha = Helpers.Lerp(x, 0, 511, 0, 1);   // hard coded value for alpha
+                double mysticRatio = Math.Pow(layerAlpha, 1 + 16 * colorInfluence);
+
+                //double r = layerColorRatio;
+                double r = 1 - (layerAlpha - mysticRatio);
+                double g = 1 - mysticRatio;
+                double b = 1;
+
+                Color finalColor = Color.FromArgb(255, r.ScaleToByte(), g.ScaleToByte(), b.ScaleToByte());
+
+                for (int y = 0; y < dest.Height; ++y)
+                {
+                    dest.SetPixelColor(x, y, finalColor);
+                }
+            }
+
+
+            //// CASE-1: BLACK BACKGROUND
+            //for (int x = 0; x < dest.Width; x++)
+            //{
+            //    double layerAlpha = Helpers.Lerp(x, 0, 511, 0, 1);   // hard coded value for alpha
+
+            //    double solidColorRatio = Math.Pow(layerAlpha, 1 + 16 * colorInfluence);
+            //    double glassEdgeRatio = layerAlpha - solidColorRatio;
+
+            //    Color finalShadowColor = Helpers.Weight(solidColorRatio, shadowColor, glassEdgeRatio, layerColor);
+
+            //    // TODO later: blend with bkg
+            //    Color finalColor = Helpers.Lerp(backgroundColorBlack, finalShadowColor, layerAlpha);
+
+            //    for (int y = 0; y < dest.Height; ++y)
+            //    {
+            //        dest.SetPixelColor(x, y, finalColor);
+            //    }
+            //}
+
+
+
+            // CASE-2: WHITE BACKGROUND
+
+
+            // CASE-3: FORMULA COMPLYING WITH BOTH
+            //for (int x = 0; x < dest.Width; x++)
+            //{
+            //    double layerAlpha = Helpers.Lerp(x, 0, 511, 0, 1);   // hard coded value for alpha
+
+            //    double glassEdgeRatio = layerAlpha - Math.Pow(layerAlpha, 1 + 16 * colorInfluence);
+
+            //    var finalShadowColor = Helpers.Lerp(shadowColor, layerColor, glassEdgeRatio);
+            //    finalShadowColor = System.Drawing.Color.FromArgb(
+            //        Convert.ToByte((255 * layerAlpha).Clamp0_255()), finalShadowColor.R, finalShadowColor.G, finalShadowColor.B);
+
+            //    var finalColor = Helpers.Lerp(backgroundColor, finalShadowColor, layerAlpha);
+
+
+            //    // TODO blend with bkg
+
+            //    for (int y = 0; y < dest.Height; ++y)
+            //    {
+            //        dest.SetPixelColor(x, y, finalColor);
+            //    }
+            //}
 
             return dest;
         }

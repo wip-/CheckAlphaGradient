@@ -32,7 +32,7 @@ namespace CheckAlphaGradation
                 rebuiltImages.BuildFromFormula();
 
             SliderInfluence.Value = 100;
-            Zoom(0.5);
+            Zoom(0.65);
         }
 
 

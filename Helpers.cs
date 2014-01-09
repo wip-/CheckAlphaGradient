@@ -65,10 +65,6 @@ namespace CheckAlphaGradation
         /// <summary>
         /// returns (1-ratio)*color0 + (ratio)*color1
         /// </summary>
-        /// <param name="color0"></param>
-        /// <param name="color1"></param>
-        /// <param name="ratio"></param>
-        /// <returns></returns>
         static public Color Lerp(Color color0, Color color1, double ratio)
         {
             double a = (1 - ratio) * color0.A + (ratio) * color1.A;
@@ -81,6 +77,29 @@ namespace CheckAlphaGradation
                 Convert.ToByte(r.Clamp0_255()),
                 Convert.ToByte(g.Clamp0_255()),
                 Convert.ToByte(b.Clamp0_255()));
+        }
+
+        /// <summary>
+        /// returns ratio0*color0 + ratio1*color1
+        /// </summary>
+        static public Color Weight(double ratio0, Color color0, double ratio1, Color color1)
+        {
+            double a = ratio0 * color0.A + ratio1 * color1.A;
+            double r = ratio0 * color0.R + ratio1 * color1.R;
+            double g = ratio0 * color0.G + ratio1 * color1.G;
+            double b = ratio0 * color0.B + ratio1 * color1.B;
+
+            return Color.FromArgb(
+                Convert.ToByte(a.Clamp0_255()),
+                Convert.ToByte(r.Clamp0_255()),
+                Convert.ToByte(g.Clamp0_255()),
+                Convert.ToByte(b.Clamp0_255()));
+        }
+
+        // maps a [0,1] double to a [0,255] byte
+        public static byte ScaleToByte(this double value)
+        {
+            return Convert.ToByte((255*value).Clamp0_255());
         }
 
         public static int Clamp0_255(this int value)
