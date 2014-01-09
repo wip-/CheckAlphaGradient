@@ -19,20 +19,17 @@ namespace CheckAlphaGradation
     internal class DataLine
     {
         public BitmapInfo[] imageBitmapInfos;
-        public IntPtr[] imageBitmaps;
 
+        public IntPtr[] imageBitmaps;
         public IntPtr[] redCurveBitmaps;
         public IntPtr[] greenCurveBitmaps;
 
-        List<double[]> redCurves;
-        List<double[]> greenCurves;
+
 
         public DataLine()
         {
             imageBitmaps = new IntPtr[101];
-            imageBitmapInfos = new BitmapInfo[101];
-            redCurves = new List<double[]>();
-            greenCurves = new List<double[]>();      
+            imageBitmapInfos = new BitmapInfo[101];    
         }
 
         public void SetImages(System.Windows.Controls.Image[] images, int colorInfluence)
@@ -55,10 +52,13 @@ namespace CheckAlphaGradation
 
         void ComputeRedGreenCurves()
         {
+            List<double[]> redCurves = new List<double[]>();
+            List<double[]> greenCurves = new List<double[]>();  
             List<double> redCurvesMins = new List<double>();
             List<double> greenCurvesMins = new List<double>();
             List<double> redCurvesMaxs = new List<double>();
             List<double> greenCurvesMaxs = new List<double>();
+
             for (int i = 0; i < 101; ++i)
             {
                 double[] redCurve = GetColorLevelCurve(imageBitmapInfos[i], (double)i / 100,
@@ -114,18 +114,29 @@ namespace CheckAlphaGradation
             {
                 for (int i = 0; i < 101; ++i)
                 {
-                    //if (i == 17 || i == 18)
-                    //    Debugger.Break();
                     BitmapInfo redCurveBitmapInfo = GetColorLevelCurveImage(redCurves[i], redCurvesMin, redCurvesMax);
-                    redCurveBitmaps[i] = redCurveBitmapInfo.ToBitmap().GetHbitmap();
+                    redCurveBitmaps[i] = ConvertBitmapInfo(redCurveBitmapInfo);
                     BitmapInfo greenCurveBitmapInfo = GetColorLevelCurveImage(greenCurves[i], greenCurvesMin, greenCurvesMax);
-                    greenCurveBitmaps[i] = greenCurveBitmapInfo.ToBitmap().GetHbitmap();
+                    greenCurveBitmaps[i] = ConvertBitmapInfo(greenCurveBitmapInfo);
                 }
             }
             catch (System.Exception ex)
             {
                 Helpers.MyCatch(ex);
             }
+        }
+
+        void ConvertImageBitmapInfos()
+        {
+            for (int i = 0; i < 101; ++i)
+            {
+                imageBitmaps[i] = ConvertBitmapInfo(imageBitmapInfos[i]);
+            }
+        }
+
+        IntPtr ConvertBitmapInfo(BitmapInfo bitmapInfo)
+        {
+            return bitmapInfo.ToBitmap().GetHbitmap();
         }
 
 
@@ -135,11 +146,9 @@ namespace CheckAlphaGradation
             {
                 String filepath = String.Format("{0}alphaGradation_{1:D3}.png", folderPath, i);
                 Bitmap bitmap = LoadBitmap(filepath);
-                BitmapInfo imageBitmapInfo = new BitmapInfo(bitmap);
-                imageBitmapInfos[i] = imageBitmapInfo;
-                imageBitmaps[i] = imageBitmapInfo.ToBitmap().GetHbitmap();
+                imageBitmapInfos[i] = new BitmapInfo(bitmap);
             }
-
+            ConvertImageBitmapInfos();
             ComputeRedGreenCurves();
         }
 
@@ -151,9 +160,8 @@ namespace CheckAlphaGradation
             for (int i = 0; i < 101; ++i)
             {
                 imageBitmapInfos[i] = GetRebuiltImage(/*imageBitmapInfos[0],*/ (double)i / 100);
-                imageBitmaps[i] = imageBitmapInfos[i].ToBitmap().GetHbitmap();
             }
-
+            ConvertImageBitmapInfos();
             ComputeRedGreenCurves();
         }
 
